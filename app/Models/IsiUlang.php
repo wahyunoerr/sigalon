@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class IsiUlang extends Model
 {
@@ -28,5 +29,15 @@ class IsiUlang extends Model
     public function galon(): BelongsTo
     {
         return $this->belongsTo(Galon::class, 'galon_id', 'id');
+    }
+
+    /**
+     * Get all of the pengantaranStatus for the IsiUlang
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function pengantaranStatus(): HasMany
+    {
+        return $this->hasMany(statusAntar::class, 'statusAntar_id', 'id');
     }
 }
