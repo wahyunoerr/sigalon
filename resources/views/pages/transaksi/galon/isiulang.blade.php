@@ -2,12 +2,12 @@
 @section('title', 'Isi Ulang Galon')
 @section('content')
     <section class="section">
-        <div class="card">
-            <div class="card-header">
-                <h4 class="card-title">Form @yield('title')</h4>
-            </div>
-            <div class="card-body">
-                <form action="{{ route('isiUlang') }}" method="post" enctype="multipart/form-data">
+        <form action="{{ route('isiUlang') }}" method="post" enctype="multipart/form-data">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Form @yield('title')</h4>
+                </div>
+                <div class="card-body">
                     @csrf
                     <div class="row">
                         <div class="col-md-12">
@@ -45,32 +45,33 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-6" id="alamatPengantaran" style="display: none;">
+                        <div class="col-md-6 d-none" id="alamatPengantaran">
                             <div class="form-group">
                                 <label for="alamat">Alamat Pengantaran</label>
                                 <input type="text" class="form-control" id="alamat" name="alamat"
                                     placeholder="Masukkan Alamat Pengantaran">
                             </div>
                         </div>
-                        <div class="col-md-6" id="noHp" style="display: none;">
+                        <div class="col-md-6 d-none" id="noHp">
                             <div class="form-group">
-                                <label for="noHp">Nomor Telepon Pelanggan</labrel>
-                                    <input type="text" class="form-control" id="noHp" name="noHp"
-                                        placeholder="Masukkan nomor telepon">
+                                <label for="noHp">Nomor Telepon Pelanggan</label>
+                                <input type="text" class="form-control" id="noHp" name="noHp"
+                                    placeholder="Masukkan nomor telepon">
                             </div>
                         </div>
                     </div>
-            </div>
-            <div class="card-footer">
-                <div class="d-flex justify-content-between align-items-center">
-                    <a href="{{ route('isiUlang') }}" class="btn btn-sm btn-secondary icon"><i class="bi bi-arrow-left"></i>
-                        Kembali</a>
-                    <button type="submit" class="btn icon btn-success"><i class="bi bi-check-lg"></i>
-                        Simpan</button>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{{ route('isiUlang') }}" class="btn btn-sm btn-secondary icon"><i
+                                class="bi bi-arrow-left"></i>
+                            Kembali</a>
+                        <button type="submit" class="btn icon btn-success"><i class="bi bi-check-lg"></i>
+                            Simpan</button>
+                    </div>
                 </div>
             </div>
-            </form>
-        </div>
+        </form>
     </section>
 
     <script>
@@ -78,15 +79,16 @@
             const statusAntarSelect = document.getElementById("statusAntarSelect");
             const alamatPengantaran = document.getElementById("alamatPengantaran");
             const noHp = document.getElementById("noHp");
+
             statusAntarSelect.addEventListener("change", function() {
                 const yaValue = "{{ $statusA->firstWhere('name', 'Ya')->id ?? '' }}";
 
                 if (statusAntarSelect.value === yaValue) {
-                    alamatPengantaran.style.display = "block";
-                    noHp.style.display = "block";
+                    alamatPengantaran.classList.remove("d-none");
+                    noHp.classList.remove("d-none");
                 } else {
-                    alamatPengantaran.style.display = "none";
-                    noHp.style.display = "none";
+                    alamatPengantaran.classList.add("d-none");
+                    noHp.classList.add("d-none");
                 }
             });
         });
