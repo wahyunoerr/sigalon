@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('tbl_isi_ulang', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('galon_id');
-            $table->unsignedBigInteger('statusAntar_id')->nullable();
+            $table->unsignedBigInteger('statusAntar_id');
             $table->string('jumlah', 100);
             $table->string('alamat', 100)->nullable();
             $table->string('noHp')->nullable();

@@ -26,7 +26,7 @@
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $d->name }}</td>
-                                <td>{{ $d->harga }}</td>
+                                <td>{{ number_format($d->harga, 0, ',', '.') }}</td>
                                 <td>
                                     <div class="buttons">
                                         <a href="{{ route('antar.edit', ['statusAntar' => $d]) }}"

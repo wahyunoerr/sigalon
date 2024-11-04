@@ -36,13 +36,27 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="basicInput">Apakah diantar?</label>
-                                <select name="statusAntar_id" class="form-control">
+                                <select name="statusAntar_id" id="statusAntarSelect" class="form-control">
                                     <option selected disabled>--Pilih--</option>
                                     @foreach ($statusA as $sa)
                                         <option value="{{ $sa->id }}">{{ $sa->name }}
                                         </option>
                                     @endforeach
                                 </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6" id="alamatPengantaran" style="display: none;">
+                            <div class="form-group">
+                                <label for="alamat">Alamat Pengantaran</label>
+                                <input type="text" class="form-control" id="alamat" name="alamat"
+                                    placeholder="Masukkan Alamat Pengantaran">
+                            </div>
+                        </div>
+                        <div class="col-md-6" id="noHp" style="display: none;">
+                            <div class="form-group">
+                                <label for="noHp">Nomor Telepon Pelanggan</labrel>
+                                    <input type="text" class="form-control" id="noHp" name="noHp"
+                                        placeholder="Masukkan nomor telepon">
                             </div>
                         </div>
                     </div>
@@ -58,4 +72,23 @@
             </form>
         </div>
     </section>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const statusAntarSelect = document.getElementById("statusAntarSelect");
+            const alamatPengantaran = document.getElementById("alamatPengantaran");
+            const noHp = document.getElementById("noHp");
+            statusAntarSelect.addEventListener("change", function() {
+                const yaValue = "{{ $statusA->firstWhere('name', 'Ya')->id ?? '' }}";
+
+                if (statusAntarSelect.value === yaValue) {
+                    alamatPengantaran.style.display = "block";
+                    noHp.style.display = "block";
+                } else {
+                    alamatPengantaran.style.display = "none";
+                    noHp.style.display = "none";
+                }
+            });
+        });
+    </script>
 @endsection

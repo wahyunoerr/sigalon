@@ -26,7 +26,7 @@
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $g->name }}</td>
-                                <td>{{ $g->harga }}</td>
+                                <td>Rp. {{ number_format($g->harga, 0, ',', '.') }}</td>
                                 <td>
                                     <div class="buttons">
                                         <a href="{{ route('galon.edit', ['galon' => $g]) }}"
