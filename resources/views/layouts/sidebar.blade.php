@@ -50,6 +50,12 @@
                         <span>Dashboard</span>
                     </a>
                 </li>
+                <li class="sidebar-item {{ request()->routeIs('antar') ? 'active' : '' }} ">
+                    <a href="{{ route('antar') }}" class='sidebar-link'>
+                        <i class="bi bi-arrow-clockwise"></i>
+                        <span>Status Antar</span>
+                    </a>
+                </li>
                 <li class="sidebar-title">Manajemen Galon</li>
 
                 <li class="sidebar-item {{ request()->routeIs('galon') ? 'active' : '' }} ">
@@ -59,8 +65,8 @@
                     </a>
                 </li>
 
-                <li class="sidebar-item {{ request()->routeIs('galon') ? 'active' : '' }} ">
-                    <a href="{{ route('galon') }}" class='sidebar-link'>
+                <li class="sidebar-item {{ request()->routeIs('isiUlang') ? 'active' : '' }} ">
+                    <a href="{{ route('isiUlang') }}" class='sidebar-link'>
                         <i class="bi bi-egg"></i>
                         <span>Isi Ulang Galon</span>
                     </a>

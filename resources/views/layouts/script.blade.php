@@ -6,3 +6,5 @@
 <script src="{{ asset('assets/static/js/pages/dashboard.js') }}"></script>
 <script src="{{ asset('assets/extensions/simple-datatables/umd/simple-datatables.js') }}"></script>
 <script src="{{ asset('assets/static/js/pages/simple-datatables.js') }}"></script>
+<script src="{{ asset('assets/extensions/choices.js/public/assets/scripts/choices.js') }}"></script>
+<script src="{{ asset('assets/static/js/pages/form-element-select.js') }}"></script>

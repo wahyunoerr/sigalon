@@ -12,7 +12,13 @@ class StatusAntarController extends Controller
      */
     public function index()
     {
-        //
+        $data = statusAntar::all();
+
+        $title = 'Hapus Data!';
+        $text = "Apakah anda yakin?";
+        confirmDelete($title, $text);
+
+        return view('pages.statusAntar.index', compact('data'));
     }
 
     /**
@@ -20,7 +26,7 @@ class StatusAntarController extends Controller
      */
     public function create()
     {
-        //
+        return view('pages.statusAntar.create');
     }
 
     /**
@@ -28,7 +34,17 @@ class StatusAntarController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string',
+            'harga' => 'required'
+        ]);
+
+        statusAntar::create([
+            'name' => $request->name,
+            'harga' => $request->harga
+        ]);
+
+        return redirect('statusA')->with('success', 'Data berhasil disimpan!');
     }
 
     /**
@@ -44,7 +60,7 @@ class StatusAntarController extends Controller
      */
     public function edit(statusAntar $statusAntar)
     {
-        //
+        return view('pages.statusAntar.edit', compact('statusAntar'));
     }
 
     /**
@@ -52,7 +68,17 @@ class StatusAntarController extends Controller
      */
     public function update(Request $request, statusAntar $statusAntar)
     {
-        //
+        $request->validate([
+            'name' => 'required|string',
+            'harga' => 'required'
+        ]);
+
+        $statusAntar->update([
+            'name' => $request->name,
+            'harga' => $request->harga
+        ]);
+
+        return redirect('statusA')->with('success', 'Data berhasil di ubah!');
     }
 
     /**
@@ -60,6 +86,8 @@ class StatusAntarController extends Controller
      */
     public function destroy(statusAntar $statusAntar)
     {
-        //
+        $statusAntar->delete();
+
+        return redirect('statusA')->with('success', 'Data berhasil dihapus!');
     }
 }

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Galon;
 use App\Models\IsiUlang;
+use App\Models\statusAntar;
 use Illuminate\Http\Request;
 
 class IsiUlangController extends Controller
@@ -10,9 +12,12 @@ class IsiUlangController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $data = Galon::all();
+        $statusA = statusAntar::all();
+
+        return view('pages.transaksi.galon.isiulang', compact('data', 'statusA'));
     }
 
     /**
@@ -60,6 +65,8 @@ class IsiUlangController extends Controller
      */
     public function destroy(IsiUlang $isiUlang)
     {
-        //
+        $isiUlang->delete();
+
+        return redirect('statusA')->with('success', 'Data berhasil dihapus!');
     }
 }
