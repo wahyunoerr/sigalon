@@ -33,7 +33,28 @@ class IsiUlangController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'galon_id' => 'required|exists:tbl_galon,id',
+            'jumlah' => 'required',
+            'statusAntar_id' => 'required|exists:tbl_status_antar,id',
+            'alamat' => 'nullable|string',
+            'noHp' => 'nullable',
+        ]);
+
+        $galon = Galon::findOrFail($request->galon_id);
+
+
+        $totalHarga = $galon->harga * $request->jumlah;
+
+        $isiUlang = new IsiUlang();
+        $isiUlang->galon_id = $request->galon_id;
+        $isiUlang->jumlah = $request->jumlah;
+        $isiUlang->statusAntar_id = $request->statusAntar_id;
+        $isiUlang->alamat = $request->alamat;
+        $isiUlang->noHp = $request->noHp;
+        $isiUlang->save();
+
+        return redirect();
     }
 
     /**
