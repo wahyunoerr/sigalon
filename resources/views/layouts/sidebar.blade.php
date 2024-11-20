@@ -56,14 +56,14 @@
                         <span>Status Antar</span>
                     </a>
                 </li>
-                <li class="sidebar-title">Manajemen Galon</li>
-
                 <li class="sidebar-item {{ request()->routeIs('galon') ? 'active' : '' }} ">
                     <a href="{{ route('galon') }}" class='sidebar-link'>
                         <i class="bi bi-egg-fill"></i>
                         <span>Jenis Galon</span>
                     </a>
                 </li>
+                <li class="sidebar-title">Manajemen isi Galon</li>
+
 
                 <li class="sidebar-item {{ request()->routeIs('isiUlang') ? 'active' : '' }} ">
                     <a href="{{ route('isiUlang') }}" class='sidebar-link'>
@@ -72,6 +72,20 @@
                     </a>
                 </li>
 
+                <li class="sidebar-title">Manajemen Transaksi</li>
+                <li class="sidebar-item {{ request()->routeIs('transaksi') ? 'active' : '' }} ">
+                    <a href="{{ route('transaksi') }}" class='sidebar-link'>
+                        <i class="bi bi-cash-coin"></i>
+                        <span>Transaksi Isi Galon</span>
+                    </a>
+                </li>
+                <li class="sidebar-title">Pengeluaran</li>
+                <li class="sidebar-item {{ request()->routeIs('pengeluaran') ? 'active' : '' }} ">
+                    <a href="{{ route('pengeluaran') }}" class='sidebar-link'>
+                        <i class="bi bi-coin"></i>
+                        <span>Pengeluaran</span>
+                    </a>
+                </li>
                 <li class="sidebar-item">
                     <a href="{{ route('logout') }}" class='sidebar-link'
                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">

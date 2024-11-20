@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Galon;
-use App\Models\IsiUlang;
 use App\Models\statusAntar;
+use App\Models\Transaksi;
+use App\Models\TransaksiDetail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class IsiUlangController extends Controller
 {
@@ -33,61 +35,70 @@ class IsiUlangController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'galon_id' => 'required|exists:tbl_galon,id',
-            'jumlah' => 'required',
-            'statusAntar_id' => 'required|exists:tbl_status_antar,id',
-            'alamat' => 'nullable|string',
-            'noHp' => 'nullable',
+        $yaValue = StatusAntar::where('name', 'Ya')->first()->id ?? null;
+
+        $validatorYa = Validator::make($request->all(), [
+            'alamat' => 'nullable|string|required_if:statusAntar_id,' . $yaValue,
+            'noHp' => 'nullable|numeric|required_if:statusAntar_id,' . $yaValue,
+        ], [
+            'alamat.required_if' => 'Alamat tidak boleh kosong!',
+            'noHp.required_if' => 'Nomor Telepon tidak boleh kosong!',
         ]);
 
-        $galon = Galon::findOrFail($request->galon_id);
+
+        $validatorIsiUlang = Validator::make($request->all(), [
+            'galon_id' => 'required|array',
+            'galon_id.*' => 'exists:tbl_galon,id',
+            'jumlah' => 'required|numeric|min:1',
+            'statusAntar_id' => 'required|exists:tbl_status_antar,id',
+        ], [
+            'galon_id.required' => 'Jenis galon tidak boleh kosong!',
+            'jumlah.required' => 'Jumlah galon tidak boleh kosong!',
+            'statusAntar_id.required' => 'Status isi ulang galon tidak boleh kosong!',
+        ]);
 
 
-        $totalHarga = $galon->harga * $request->jumlah;
+        if ($validatorIsiUlang->fails()) {
+            return back()->with('error', $validatorIsiUlang->messages()->all()[0])->withInput();
+        }
+        if ($validatorYa->fails()) {
+            return back()->with('toast_error', $validatorYa->messages()->all()[0])->withInput();
+        }
 
-        $isiUlang = new IsiUlang();
-        $isiUlang->galon_id = $request->galon_id;
-        $isiUlang->jumlah = $request->jumlah;
-        $isiUlang->statusAntar_id = $request->statusAntar_id;
-        $isiUlang->alamat = $request->alamat;
-        $isiUlang->noHp = $request->noHp;
-        $isiUlang->save();
+        if ($request->galon_id > 1) {
+            $galon = Galon::findOrFail($request->galon_id);
+            $totalHarga = $galon->sum('harga') * $request->jumlah;
+        } else {
+            $galon = Galon::findOrFail($request->galon_id);
+            $totalHarga = $galon->harga * $request->jumlah;
+        }
 
-        return redirect();
-    }
+        $lastTransaksi = Transaksi::latest('id')->first();
+        $newKode = $lastTransaksi ? (intval(substr($lastTransaksi->kode, -3)) + 1) : 1;
+        $kode = now()->format('dmY') . 'GL' . str_pad($newKode, 3, '0', STR_PAD_LEFT);
+        $transaksi = new Transaksi();
+        $transaksi->kode_transaksi = $kode;
+        $transaksi->jumlah = $request->jumlah;
+        $transaksi->total_harga = $totalHarga;
+        $transaksi->alamat = $request->alamat;
+        $transaksi->noHp = $request->noHp;
+        $transaksi->save();
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(IsiUlang $isiUlang)
-    {
-        //
-    }
+        $status = statusAntar::findOrFail($request->statusAntar_id);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(IsiUlang $isiUlang)
-    {
-        //
-    }
+        foreach ($request->galon_id as $galonId) {
+            $galon = Galon::findOrFail($galonId);
+            $subTotal = $galon->harga + $status->harga;
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, IsiUlang $isiUlang)
-    {
-        //
-    }
+            $data = [
+                'transaksi_id' => $transaksi->id,
+                'galon_id' => $galonId,
+                'status_id' => $request->statusAntar_id,
+                'subTotal' => $subTotal,
+            ];
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(IsiUlang $isiUlang)
-    {
-        $isiUlang->delete();
-
-        return redirect('statusA')->with('success', 'Data berhasil dihapus!');
+            TransaksiDetail::create($data);
+        }
+        return redirect('transaksi')->with('success', 'Data berhasil disimpan!');
     }
 }

@@ -7,20 +7,27 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class IsiUlang extends Model
+class TransaksiDetail extends Model
 {
     use HasFactory;
 
-    protected $table = 'tbl_isi_ulang';
-
+    protected $table = 'tbl_transaksi_detail_galon';
     protected $fillable = [
+        'transaksi_id',
         'galon_id',
-        'statusAntar_id',
-        'jumlah',
-        'alamat',
-        'noHp'
+        'status_id',
+        'subTotal'
     ];
 
+    /**
+     * Get all of the Transaksi for the TransaksiDetail
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function Transaksi(): HasMany
+    {
+        return $this->hasMany(Transaksi::class, 'transaksi_id', 'id');
+    }
     /**
      * Get the galon that owns the IsiUlang
      *

@@ -22,8 +22,8 @@ class statusAntar extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function isiUlang(): BelongsTo
+    public function TransakasiDetail(): BelongsTo
     {
-        return $this->belongsTo(IsiUlang::class, 'statusAntar_id', 'id');
+        return $this->belongsTo(TransaksiDetail::class, 'statusAntar_id', 'id');
     }
 }

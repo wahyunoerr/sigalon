@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tbl_transaksi_galon', function (Blueprint $table) {
+        Schema::create('tbl_pencatatan_pengeluaran', function (Blueprint $table) {
             $table->id();
-            $table->string('kode_transaksi', 100);
-            $table->string('total', 100);;
+            $table->string('kode', 100);
+            $table->string('total_pengeluaran', 100);
             $table->timestamps();
         });
     }
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tbl_transaksi_galon');
+        Schema::dropIfExists('tbl_pencatatan_pengeluaran');
     }
 };

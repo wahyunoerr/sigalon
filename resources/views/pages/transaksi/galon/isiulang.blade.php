@@ -2,7 +2,7 @@
 @section('title', 'Isi Ulang Galon')
 @section('content')
     <section class="section">
-        <form action="{{ route('isiUlang') }}" method="post" enctype="multipart/form-data">
+        <form action="{{ route('isiUlang.save') }}" method="POST" enctype="multipart/form-data">
             <div class="card">
                 <div class="card-header">
                     <h4 class="card-title">Form @yield('title')</h4>
@@ -14,8 +14,8 @@
                             <div class="form-group">
                                 <label for="basicInput">Jenis Galon</label>
                                 <div class="form-group">
-                                    <select class="choices form-select form-control multiple-remove" name="galon_id"
-                                        multiple="multiple">
+                                    <select class="choices form-select form-control multiple-remove" name="galon_id[]"
+                                        multiple="multiple" value="{{ old('galon_id[]') }}">
                                         <optgroup label="Pilih">
                                             @foreach ($data as $item)
                                                 <option value="{{ $item->id }}">{{ $item->name }} | Rp.
@@ -49,14 +49,20 @@
                             <div class="form-group">
                                 <label for="alamat">Alamat Pengantaran</label>
                                 <input type="text" class="form-control" id="alamat" name="alamat"
-                                    placeholder="Masukkan Alamat Pengantaran">
+                                    placeholder="Masukkan Alamat Pengantaran" value="{{ old('alamat') }}">
+                                @error('alamat')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
                         <div class="col-md-6 d-none" id="noHp">
                             <div class="form-group">
                                 <label for="noHp">Nomor Telepon Pelanggan</label>
-                                <input type="text" class="form-control" id="noHp" name="noHp"
-                                    placeholder="Masukkan nomor telepon">
+                                <input type="number" class="form-control" id="noHp" name="noHp"
+                                    placeholder="Masukkan nomor telepon" value="{{ old('noHp') }}">
+                                @error('noHp')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
                     </div>
@@ -93,4 +99,18 @@
             });
         });
     </script>
+    @if ($errors->any())
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Ada beberapa kesalahan pada form Anda.',
+                footer: '<ul>' +
+                    @foreach ($errors->all() as $error)
+                        '<li>{{ $error }}</li>' +
+                    @endforeach
+                '</ul>',
+            });
+        </script>
+    @endif
 @endsection

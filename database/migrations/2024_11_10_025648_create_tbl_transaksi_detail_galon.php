@@ -15,9 +15,13 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('transaksi_id');
             $table->unsignedBigInteger('galon_id');
-            $table->string('jumlah', 100);
+            $table->unsignedBigInteger('status_id');
             $table->string('subTotal', 100);
             $table->timestamps();
+
+            $table->foreign('transaksi_id')->references('id')->on('tbl_transaksi_galon')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreign('galon_id')->references('id')->on('tbl_galon')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreign('status_id')->references('id')->on('tbl_status_antar')->cascadeOnDelete()->cascadeOnUpdate();
         });
     }
 

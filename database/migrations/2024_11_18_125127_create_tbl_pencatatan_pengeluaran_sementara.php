@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tbl_transaksi_galon', function (Blueprint $table) {
+        Schema::create('tbl_pencatatan_pengeluaran_sementara', function (Blueprint $table) {
             $table->id();
-            $table->string('kode_transaksi', 100);
-            $table->string('jumlah', 100);
-            $table->string('total_harga', 100);
-            $table->string('alamat', 100)->nullable();
-            $table->string('noHp')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->unsignedBigInteger('status_id')->nullable();
+
             $table->timestamps();
         });
     }
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tbl_transaksi_galon');
+        Schema::dropIfExists('tbl_pencatatan_pengeluaran_sementara');
     }
 };

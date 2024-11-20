@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\GalonController;
 use App\Http\Controllers\IsiUlangController;
+use App\Http\Controllers\PengeluaranController;
 use App\Http\Controllers\StatusAntarController;
+use App\Http\Controllers\TransaksiController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -50,10 +52,28 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         });
     });
 
+    Route::controller(TransaksiController::class)->group(function () {
+        Route::prefix('transaksi')->group(function () {
+            Route::get('/', 'index')->name('transaksi');
+            Route::get('/add', 'create')->name('transaksi.create');
+            Route::get('/edit/{transaksi}', 'edit')->name('transaksi.edit');
+            Route::post('/save', 'store')->name('transaksi.save');
+            Route::post('/update/{transaksi}', 'update')->name('transaksi.update');
+            Route::delete('/delete/{transaksi}', 'destroy')->name('transaksi.destroy');
+        });
+    });
+
     Route::controller(IsiUlangController::class)->group(function () {
         Route::prefix('isi-ulang')->group(function () {
             Route::get('/', 'index')->name('isiUlang');
-            Route::post('/orders', 'store');
+            Route::post('/save', 'store')->name('isiUlang.save');
+        });
+    });
+
+    Route::controller(PengeluaranController::class)->group(function () {
+        Route::prefix('pengeluaran')->group(function () {
+            Route::get('/', 'index')->name('pengeluaran');
+            Route::post('/orders', 'store')->name('pengeluaran.save');
         });
     });
 });
