@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Galon;
+use App\Models\Pengeluaran;
 use App\Models\statusAntar;
 use App\Models\Transaksi;
 use App\Models\TransaksiDetail;
@@ -73,9 +74,7 @@ class IsiUlangController extends Controller
             $totalHarga = $galon->harga * $request->jumlah;
         }
 
-        $lastTransaksi = Transaksi::latest('id')->first();
-        $newKode = $lastTransaksi ? (intval(substr($lastTransaksi->kode, -3)) + 1) : 1;
-        $kode = now()->format('dmY') . 'GL' . str_pad($newKode, 3, '0', STR_PAD_LEFT);
+        $kode = now()->format('dmY') . 'GLIN' . now()->format('Hi');
         $transaksi = new Transaksi();
         $transaksi->kode_transaksi = $kode;
         $transaksi->jumlah = $request->jumlah;
@@ -85,6 +84,15 @@ class IsiUlangController extends Controller
         $transaksi->save();
 
         $status = statusAntar::findOrFail($request->statusAntar_id);
+
+        if ($request->statusAntar_id == $yaValue) {
+            $pengeluaran = new Pengeluaran();
+            $pengeluaran->name = 'Fee Karyawan';
+            $pengeluaran->harga = 500;
+            $pengeluaran->jumlah = 0;
+            $pengeluaran->keterangan = 'Antar Galon';
+            $pengeluaran->save();
+        }
 
         foreach ($request->galon_id as $galonId) {
             $galon = Galon::findOrFail($galonId);

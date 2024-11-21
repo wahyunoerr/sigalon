@@ -12,15 +12,64 @@ class PengeluaranController extends Controller
      */
     public function index()
     {
-        return view('pages.pengeluaran.index');
+        $title = 'Hapus Data!';
+        $text = "Apakah anda yakin?";
+        confirmDelete($title, $text);
+
+        $pengeluaran = Pengeluaran::all();
+
+
+        $pengeluaranHariIniQuery = Pengeluaran::whereDate('created_at', now()->toDateString())->get();
+
+        if ($pengeluaranHariIniQuery->isEmpty() || $pengeluaranHariIniQuery->every(fn($item) => $item->harga == 0)) {
+            $pengeluaranHariIni = $pengeluaranHariIniQuery->sum('jumlah'); // Jumlahkan 'jumlah' jika semua data Fee Karyawan
+        } else {
+            $pengeluaranHariIni = $pengeluaranHariIniQuery->sum(function ($item) {
+                return $item->harga * $item->jumlah;
+            });
+        }
+
+
+        $pengeluaranBulanIniQuery = Pengeluaran::whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->get();
+
+        if ($pengeluaranBulanIniQuery->isEmpty() || $pengeluaranBulanIniQuery->every(fn($item) => $item->harga == 0)) {
+            $pengeluaranBulanIni = $pengeluaranBulanIniQuery->sum('jumlah');
+        } else {
+            $pengeluaranBulanIni = $pengeluaranBulanIniQuery->sum(function ($item) {
+                return $item->harga * $item->jumlah;
+            });
+        }
+
+        $pengeluaranTahunIniQuery = Pengeluaran::whereYear('created_at', now()->year)->get();
+
+        if ($pengeluaranTahunIniQuery->isEmpty() || $pengeluaranTahunIniQuery->every(fn($item) => $item->harga == 0)) {
+            $pengeluaranTahunIni = $pengeluaranTahunIniQuery->sum('jumlah');
+        } else {
+            $pengeluaranTahunIni = $pengeluaranTahunIniQuery->sum(function ($item) {
+                return $item->harga * $item->jumlah;
+            });
+        }
+
+        $totalDataPengeluaran = Pengeluaran::count();
+
+        return view('pages.pengeluaran.index', compact(
+            'pengeluaran',
+            'pengeluaranHariIni',
+            'pengeluaranBulanIni',
+            'pengeluaranTahunIni',
+            'totalDataPengeluaran'
+        ));
     }
+
 
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        //
+        return view('pages.pengeluaran.create');
     }
 
     /**
@@ -28,7 +77,26 @@ class PengeluaranController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate(
+            [
+                'name' => 'required|min:5',
+                'jumlah' => 'required',
+                'harga' => 'required',
+                'keterangan' => 'required|min:5'
+            ],
+            [
+                'name.required' => 'Nama tidak boleh kosong',
+                'name.min' => 'Minimal 5 karakter',
+                'jumlah.required' => 'Jumlah tidak boleh kosong',
+                'harga.required' => 'Harga tidak boleh kosong',
+                'keterangan.required' => 'Keterangan tidak boleh kosong',
+                'keterangan.min' => 'Minimal 5 karakter',
+            ]
+        );
+
+        Pengeluaran::create($request->all());
+
+        return redirect('pengeluaran')->withSuccess('Data berhasil ditambahkan');
     }
 
     /**
@@ -60,6 +128,8 @@ class PengeluaranController extends Controller
      */
     public function destroy(Pengeluaran $pengeluaran)
     {
-        //
+        $pengeluaran->delete();
+
+        return redirect()->back()->withSuccess('Data Berhasil Dihapus!');
     }
 }

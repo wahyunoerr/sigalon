@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Transaksi Galon')
+@section('title', 'Transaksi Isi Galon')
 @section('content')
     <section class="section">
         <div class="card">
@@ -17,7 +17,7 @@
                             <th width="10%">No</th>
                             <th>Kode Transaksi</th>
                             <th>Jumlah</th>
-                            <th>Harga</th>
+                            <th>Total</th>
                             <th width="20%">Action</th>
                         </tr>
                     </thead>

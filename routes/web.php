@@ -73,7 +73,11 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::controller(PengeluaranController::class)->group(function () {
         Route::prefix('pengeluaran')->group(function () {
             Route::get('/', 'index')->name('pengeluaran');
-            Route::post('/orders', 'store')->name('pengeluaran.save');
+            Route::get('/create', 'create')->name('pengeluaran.create');
+            Route::get('/edit/{pengeluaran}', 'create')->name('pengeluaran.edit');
+            Route::post('/save', 'store')->name('pengeluaran.save');
+            Route::post('/update/{pengeluaran}', 'update')->name('pengeluaran.update');
+            Route::delete('/delete/{pengeluaran}', 'destroy')->name('pengeluaran.destroy');
         });
     });
 });
