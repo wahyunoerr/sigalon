@@ -46,18 +46,17 @@ class IsiUlangController extends Controller
             'noHp.required_if' => 'Nomor Telepon tidak boleh kosong!',
         ]);
 
-
         $validatorIsiUlang = Validator::make($request->all(), [
             'galon_id' => 'required|array',
             'galon_id.*' => 'exists:tbl_galon,id',
-            'jumlah' => 'required|numeric|min:1',
+            'jumlah' => 'required|array',
+            'jumlah.*' => 'required|numeric|min:1',
             'statusAntar_id' => 'required|exists:tbl_status_antar,id',
         ], [
             'galon_id.required' => 'Jenis galon tidak boleh kosong!',
             'jumlah.required' => 'Jumlah galon tidak boleh kosong!',
             'statusAntar_id.required' => 'Status isi ulang galon tidak boleh kosong!',
         ]);
-
 
         if ($validatorIsiUlang->fails()) {
             return back()->with('error', $validatorIsiUlang->messages()->all()[0])->withInput();
@@ -66,18 +65,18 @@ class IsiUlangController extends Controller
             return back()->with('toast_error', $validatorYa->messages()->all()[0])->withInput();
         }
 
-        if ($request->galon_id > 1) {
-            $galon = Galon::findOrFail($request->galon_id);
-            $totalHarga = $galon->sum('harga') * $request->jumlah;
-        } else {
-            $galon = Galon::findOrFail($request->galon_id);
-            $totalHarga = $galon->harga * $request->jumlah;
+        $totalHarga = 0;
+        $totalJumlah = 0;
+        foreach ($request->galon_id as $galonId) {
+            $galon = Galon::findOrFail($galonId);
+            $totalHarga += $galon->harga * $request->jumlah[$galonId];
+            $totalJumlah += $request->jumlah[$galonId];
         }
 
         $kode = now()->format('dmY') . 'GLIN' . now()->format('Hi');
         $transaksi = new Transaksi();
         $transaksi->kode_transaksi = $kode;
-        $transaksi->jumlah = $request->jumlah;
+        $transaksi->jumlah = $totalJumlah;
         $transaksi->total_harga = $totalHarga;
         $transaksi->alamat = $request->alamat;
         $transaksi->noHp = $request->noHp;
@@ -89,18 +88,18 @@ class IsiUlangController extends Controller
             $pengeluaran = new Pengeluaran();
             $pengeluaran->name = 'Fee Karyawan';
             $pengeluaran->harga = 500;
-            $pengeluaran->jumlah = 0;
+            $pengeluaran->jumlah = 1;
             $pengeluaran->keterangan = 'Antar Galon';
             $pengeluaran->save();
         }
 
         foreach ($request->galon_id as $galonId) {
             $galon = Galon::findOrFail($galonId);
-            $subTotal = $galon->harga + $status->harga;
-
+            $subTotal = $galon->harga * $request->jumlah[$galonId];
             $data = [
                 'transaksi_id' => $transaksi->id,
                 'galon_id' => $galonId,
+                'jumlah' => $request->jumlah[$galonId],
                 'status_id' => $request->statusAntar_id,
                 'subTotal' => $subTotal,
             ];

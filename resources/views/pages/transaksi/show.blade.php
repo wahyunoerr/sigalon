@@ -1,61 +1,161 @@
 @extends('layouts.app')
 @section('title', 'Detail Transaksi')
-<div class="col-12">
-    <div class="card">
-        <div class="card-header">
-            <h4 class="card-title">Table with outer spacing</h4>
-        </div>
-        <div class="card-content">
-            <div class="card-body">
-                <p class="card-text">Using the most basic table up, here’s how
-                    <code>.table</code>-based tables look in Bootstrap. You can use any example
-                    of below table for your table and it can be use with any type of bootstrap tables.
-                </p>
-                <div class="table-responsive">
-                    <table class="table table-lg">
-                        <thead>
-                            <tr>
-                                <th>NAME</th>
-                                <th>RATE</th>
-                                <th>SKILL</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="text-bold-500">Michael Right</td>
-                                <td>$15/hr</td>
-                                <td class="text-bold-500">UI/UX</td>
+@section('content')
+    <style>
+        @media print {
+            body * {
+                visibility: hidden;
+            }
 
-                            </tr>
-                            <tr>
-                                <td class="text-bold-500">Morgan Vanblum</td>
-                                <td>$13/hr</td>
-                                <td class="text-bold-500">Graphic concepts</td>
+            .printableArea,
+            .printableArea * {
+                visibility: visible;
+            }
 
-                            </tr>
-                            <tr>
-                                <td class="text-bold-500">Tiffani Blogz</td>
-                                <td>$15/hr</td>
-                                <td class="text-bold-500">Animation</td>
+            .printableArea {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
 
-                            </tr>
-                            <tr>
-                                <td class="text-bold-500">Ashley Boul</td>
-                                <td>$15/hr</td>
-                                <td class="text-bold-500">Animation</td>
+            .card-header,
+            .btn {
+                display: none;
+            }
 
-                            </tr>
-                            <tr>
-                                <td class="text-bold-500">Mikkey Mice</td>
-                                <td>$15/hr</td>
-                                <td class="text-bold-500">Animation</td>
+            .table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 12px;
+            }
 
-                            </tr>
-                        </tbody>
-                    </table>
+            .table th,
+            .table tr,
+            .table td {
+                border: 1px solid black;
+                padding: 8px;
+                text-align: left;
+                color: black;
+            }
+
+            .table th {
+                color: black;
+            }
+
+            .table tr {
+                color: black;
+            }
+
+            .table-striped tbody tr:nth-of-type(odd) {
+                background-color: rgba(0, 0, 0, 0.05);
+            }
+
+            .card-header {
+                background-color: #007bff;
+                color: black;
+            }
+
+            .card-title {
+                color: black;
+            }
+        }
+
+        .card {
+            margin-top: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            border-bottom: 1px solid #e9ecef;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .card-title {
+            margin: 0;
+        }
+
+        .btn {
+            margin-left: auto;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .thead-dark th {
+            background-color: #e0f7fa;
+            color: black;
+        }
+    </style>
+    <div class="col-12">
+        <div class="card printableArea">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title">Detail Transaksi {{ $transaksi->created_at->format('d/m/Y') }}</h4>
+                <button onclick="window.print()" class="btn btn-secondary">Cetak</button>
+            </div>
+            <div class="card-content">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-lg table-striped">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Kode Transaksi</th>
+                                    <th>Galon</th>
+                                    <th>Jumlah</th>
+                                    <th>Harga Galon</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($transaksi->TransaksiDetail as $detail)
+                                    <tr>
+                                        <td>{{ $transaksi->kode_transaksi }}</td>
+                                        <td>{{ $detail->galon->name }}</td>
+                                        <td>{{ $detail->jumlah }}</td>
+                                        <td>Rp. {{ number_format($detail->galon->harga, 0, ',', '.') }}</td>
+                                        <td>Rp. {{ number_format($detail->subTotal, 0, ',', '.') }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="4" style="text-align:right">Antar Galon:</th>
+                                    <th>
+                                        @if ($transaksi->TransaksiDetail->first()->pengantaranStatus->name == 'Tidak')
+                                            Rp. 0
+                                        @else
+                                            Rp.
+                                            {{ number_format($transaksi->TransaksiDetail->first()->pengantaranStatus->harga, 0, ',', '.') }}
+                                        @endif
+
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th colspan="4" style="text-align:right">Fee Karyawan:</th>
+                                    <th>
+                                        @if ($transaksi->TransaksiDetail->first()->pengantaranStatus->name == 'Tidak')
+                                            Rp. 0
+                                        @else
+                                            Rp. -500
+                                        @endif
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th colspan="4" style="text-align:right">Total:</th>
+                                    <th>
+                                        Rp.
+                                        {{ number_format($transaksi->TransaksiDetail->sum('subTotal') + ($transaksi->TransaksiDetail->first()->pengantaranStatus->name == 'Tidak' ? 0 : $transaksi->TransaksiDetail->first()->pengantaranStatus->harga) - 500, 0, ',', '.') }}
+                                    </th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 @endsection

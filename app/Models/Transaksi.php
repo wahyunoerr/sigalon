@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Transaksi extends Model
 {
@@ -21,12 +21,24 @@ class Transaksi extends Model
     ];
 
     /**
-     * Get the TransaksiDetail that owns the Transaksi
+     * Get the TransaksiDetail that belongs to the Transaksi
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function TransaksiDetail(): BelongsTo
+    public function TransaksiDetail(): HasMany
     {
-        return $this->belongsTo(TransaksiDetail::class, 'transaksi_id', 'id');
+        return $this->hasMany(TransaksiDetail::class, 'transaksi_id', 'id');
+    }
+
+    /**
+     * Boot method to delete related TransaksiDetail when a Transaksi is deleted.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($transaksi) {
+            $transaksi->TransaksiDetail()->delete();
+        });
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class TransaksiController extends Controller
 {
@@ -12,7 +13,11 @@ class TransaksiController extends Controller
      */
     public function index()
     {
-        $transaksi = Transaksi::with('TransaksiDetail')->get();
+        $title = 'Hapus Data!';
+        $text = "Apakah anda yakin?";
+        confirmDelete($title, $text);
+
+        $transaksi = Transaksi::with('TransaksiDetail')->latest()->get();
 
         return view('pages.transaksi.index', compact('transaksi'));
     }
@@ -38,7 +43,8 @@ class TransaksiController extends Controller
      */
     public function show(Transaksi $transaksi)
     {
-        //
+        $transaksi->load('TransaksiDetail');
+        return view('pages.transaksi.show', compact('transaksi'));
     }
 
     /**
@@ -62,6 +68,24 @@ class TransaksiController extends Controller
      */
     public function destroy(Transaksi $transaksi)
     {
-        //
+        $transaksi->delete();
+
+        return redirect('transaksi')->with('success', 'Data berhasil dihapus');
+    }
+
+    /**
+     * Filter transactions by date range.
+     */
+    public function filter(Request $request)
+    {
+        $start_date = Carbon::parse($request->start_date)->startOfDay();
+        $end_date = Carbon::parse($request->end_date)->endOfDay();
+
+        $transaksi = Transaksi::with('TransaksiDetail')
+            ->whereBetween('created_at', [$start_date, $end_date])
+            ->latest()
+            ->get();
+
+        return view('pages.transaksi.index', compact('transaksi'));
     }
 }

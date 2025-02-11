@@ -24,6 +24,6 @@ class statusAntar extends Model
      */
     public function TransakasiDetail(): BelongsTo
     {
-        return $this->belongsTo(TransaksiDetail::class, 'statusAntar_id', 'id');
+        return $this->hashMany(TransaksiDetail::class, 'status_id', 'id');
     }
 }

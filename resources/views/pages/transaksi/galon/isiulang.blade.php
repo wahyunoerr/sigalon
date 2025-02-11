@@ -26,13 +26,16 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="basicInput">Jumlah Galon</label>
-                                <input type="number" class="form-control" id="basicInput" name="jumlah"
-                                    placeholder="Masukkan Jumlah Galon">
+                        @foreach ($data as $item)
+                            <div class="col-md-6 galon-quantity d-none" id="galon-quantity-{{ $item->id }}">
+                                <div class="form-group">
+                                    <label for="jumlah-{{ $item->id }}">Jumlah Galon {{ $item->name }}</label>
+                                    <input type="number" class="form-control" id="jumlah-{{ $item->id }}"
+                                        name="jumlah[{{ $item->id }}]"
+                                        placeholder="Masukkan Jumlah Galon {{ $item->name }}">
+                                </div>
                             </div>
-                        </div>
+                        @endforeach
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="basicInput">Apakah diantar?</label>
@@ -85,6 +88,7 @@
             const statusAntarSelect = document.getElementById("statusAntarSelect");
             const alamatPengantaran = document.getElementById("alamatPengantaran");
             const noHp = document.getElementById("noHp");
+            const galonSelect = document.querySelector('select[name="galon_id[]"]');
 
             statusAntarSelect.addEventListener("change", function() {
                 const yaValue = "{{ $statusA->firstWhere('name', 'Ya')->id ?? '' }}";
@@ -96,6 +100,17 @@
                     alamatPengantaran.classList.add("d-none");
                     noHp.classList.add("d-none");
                 }
+            });
+
+            galonSelect.addEventListener("change", function() {
+                document.querySelectorAll('.galon-quantity').forEach(function(element) {
+                    element.classList.add('d-none');
+                });
+
+                Array.from(galonSelect.selectedOptions).forEach(function(option) {
+                    document.getElementById('galon-quantity-' + option.value).classList.remove(
+                        'd-none');
+                });
             });
         });
     </script>

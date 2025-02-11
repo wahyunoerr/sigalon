@@ -7,6 +7,7 @@ use App\Http\Controllers\StatusAntarController;
 use App\Http\Controllers\TransaksiController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +26,8 @@ Route::get('/', function () {
 
 Auth::routes();
 
+Route::get('/chart-data', [HomeController::class, 'getChartData'])->name('chart.data');
+Route::get('/galon-antar-data', [HomeController::class, 'getGalonAntarData'])->name('galonAntar.data');
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
 
@@ -57,6 +60,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
             Route::get('/', 'index')->name('transaksi');
             Route::get('/add', 'create')->name('transaksi.create');
             Route::get('/edit/{transaksi}', 'edit')->name('transaksi.edit');
+            Route::get('/show/{transaksi}', 'show')->name('transaksi.show');
+            Route::get('/filter', 'filter')->name('transaksi.filter');
             Route::post('/save', 'store')->name('transaksi.save');
             Route::post('/update/{transaksi}', 'update')->name('transaksi.update');
             Route::delete('/delete/{transaksi}', 'destroy')->name('transaksi.destroy');
@@ -75,6 +80,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
             Route::get('/', 'index')->name('pengeluaran');
             Route::get('/create', 'create')->name('pengeluaran.create');
             Route::get('/edit/{pengeluaran}', 'create')->name('pengeluaran.edit');
+            Route::get('/filter', 'filter')->name('pengeluaran.filter');
+            Route::get('/print', 'print')->name('pengeluaran.print');
             Route::post('/save', 'store')->name('pengeluaran.save');
             Route::post('/update/{pengeluaran}', 'update')->name('pengeluaran.update');
             Route::delete('/delete/{pengeluaran}', 'destroy')->name('pengeluaran.destroy');

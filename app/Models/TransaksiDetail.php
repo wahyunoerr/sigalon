@@ -15,6 +15,7 @@ class TransaksiDetail extends Model
     protected $fillable = [
         'transaksi_id',
         'galon_id',
+        'jumlah',
         'status_id',
         'subTotal'
     ];
@@ -41,10 +42,10 @@ class TransaksiDetail extends Model
     /**
      * Get all of the pengantaranStatus for the IsiUlang
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function pengantaranStatus(): HasMany
+    public function pengantaranStatus(): BelongsTo
     {
-        return $this->hasMany(statusAntar::class, 'statusAntar_id', 'id');
+        return $this->belongsTo(statusAntar::class, 'status_id', 'id');
     }
 }

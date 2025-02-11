@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('transaksi_id');
             $table->unsignedBigInteger('galon_id');
             $table->unsignedBigInteger('status_id');
+            $table->string('jumlah', 100);
             $table->string('subTotal', 100);
             $table->timestamps();
 
