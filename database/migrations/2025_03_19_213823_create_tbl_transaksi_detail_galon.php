@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('transaksi_id');
             $table->unsignedBigInteger('galon_id');
             $table->unsignedBigInteger('status_id');
+            $table->unsignedBigInteger('pelanggan_id');
             $table->string('jumlah', 100);
             $table->string('subTotal', 100);
             $table->timestamps();
@@ -23,6 +24,7 @@ return new class extends Migration
             $table->foreign('transaksi_id')->references('id')->on('tbl_transaksi_galon')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreign('galon_id')->references('id')->on('tbl_galon')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreign('status_id')->references('id')->on('tbl_status_antar')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreign('pelanggan_id')->references('id')->on('pelanggans')->cascadeOnDelete()->cascadeOnUpdate();
         });
     }
 

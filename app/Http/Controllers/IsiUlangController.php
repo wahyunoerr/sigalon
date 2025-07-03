@@ -7,6 +7,7 @@ use App\Models\Pengeluaran;
 use App\Models\statusAntar;
 use App\Models\Transaksi;
 use App\Models\TransaksiDetail;
+use App\Models\Pelanggan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -19,8 +20,9 @@ class IsiUlangController extends Controller
     {
         $data = Galon::all();
         $statusA = statusAntar::all();
+        $pelanggan = Pelanggan::all();
 
-        return view('pages.transaksi.galon.isiulang', compact('data', 'statusA'));
+        return view('pages.transaksi.galon.isiulang', compact('data', 'statusA', 'pelanggan'));
     }
 
     /**
@@ -36,76 +38,65 @@ class IsiUlangController extends Controller
      */
     public function store(Request $request)
     {
-        $yaValue = StatusAntar::where('name', 'Ya')->first()->id ?? null;
-
-        $validatorYa = Validator::make($request->all(), [
-            'alamat' => 'nullable|string|required_if:statusAntar_id,' . $yaValue,
-            'noHp' => 'nullable|numeric|required_if:statusAntar_id,' . $yaValue,
-        ], [
-            'alamat.required_if' => 'Alamat tidak boleh kosong!',
-            'noHp.required_if' => 'Nomor Telepon tidak boleh kosong!',
-        ]);
-
         $validatorIsiUlang = Validator::make($request->all(), [
             'galon_id' => 'required|array',
             'galon_id.*' => 'exists:tbl_galon,id',
             'jumlah' => 'required|array',
-            'jumlah.*' => 'required|numeric|min:1',
+            'jumlah.*' => 'nullable|numeric|min:1',
             'statusAntar_id' => 'required|exists:tbl_status_antar,id',
+            'pelanggan_id' => 'required',
+            'name' => 'required_if:pelanggan_id,new|string',
+            'alamat' => 'required_if:pelanggan_id,new|string',
+            'noHp' => 'required_if:pelanggan_id,new|numeric',
         ], [
             'galon_id.required' => 'Jenis galon tidak boleh kosong!',
             'jumlah.required' => 'Jumlah galon tidak boleh kosong!',
+            'jumlah.*.numeric' => 'Jumlah galon harus berupa angka!',
+            'jumlah.*.min' => 'Jumlah galon minimal 1!',
             'statusAntar_id.required' => 'Status isi ulang galon tidak boleh kosong!',
+            'pelanggan_id.required' => 'Pelanggan harus dipilih!',
+            'name.required_if' => 'Nama pelanggan tidak boleh kosong!',
+            'alamat.required_if' => 'Alamat pelanggan tidak boleh kosong untuk pelanggan baru!',
+            'noHp.required_if' => 'Nomor telepon pelanggan tidak boleh kosong untuk pelanggan baru!',
         ]);
 
         if ($validatorIsiUlang->fails()) {
             return back()->with('error', $validatorIsiUlang->messages()->all()[0])->withInput();
         }
-        if ($validatorYa->fails()) {
-            return back()->with('toast_error', $validatorYa->messages()->all()[0])->withInput();
+
+        $pelanggan = null;
+        if ($request->pelanggan_id === 'new') {
+            $pelanggan = Pelanggan::create([
+                'name' => $request->name,
+                'alamat' => $request->alamat,
+                'noHp' => $request->noHp,
+            ]);
+        } else {
+            $pelanggan = Pelanggan::findOrFail($request->pelanggan_id);
         }
 
-        $totalHarga = 0;
-        $totalJumlah = 0;
-        foreach ($request->galon_id as $galonId) {
-            $galon = Galon::findOrFail($galonId);
-            $totalHarga += $galon->harga * $request->jumlah[$galonId];
-            $totalJumlah += $request->jumlah[$galonId];
-        }
-
-        $kode = now()->format('dmY') . 'GLIN' . now()->format('Hi');
         $transaksi = new Transaksi();
-        $transaksi->kode_transaksi = $kode;
-        $transaksi->jumlah = $totalJumlah;
-        $transaksi->total_harga = $totalHarga;
-        $transaksi->alamat = $request->alamat;
-        $transaksi->noHp = $request->noHp;
+        $transaksi->kode_transaksi = now()->format('dmY') . 'GLIN' . now()->format('Hi');
+        $transaksi->jumlah = collect($request->galon_id)->sum(function ($galonId) use ($request) {
+            return $request->jumlah[$galonId];
+        });
+        $transaksi->total_harga = collect($request->galon_id)->sum(function ($galonId) use ($request) {
+            $galon = Galon::findOrFail($galonId);
+            return $galon->harga * $request->jumlah[$galonId];
+        });
         $transaksi->save();
 
-        $status = statusAntar::findOrFail($request->statusAntar_id);
-
-        if ($request->statusAntar_id == $yaValue) {
-            $pengeluaran = new Pengeluaran();
-            $pengeluaran->name = 'Fee Karyawan';
-            $pengeluaran->harga = 500;
-            $pengeluaran->jumlah = 1;
-            $pengeluaran->keterangan = 'Antar Galon';
-            $pengeluaran->save();
-        }
-
         foreach ($request->galon_id as $galonId) {
-            $galon = Galon::findOrFail($galonId);
-            $subTotal = $galon->harga * $request->jumlah[$galonId];
-            $data = [
+            TransaksiDetail::create([
                 'transaksi_id' => $transaksi->id,
                 'galon_id' => $galonId,
+                'pelanggan_id' => $pelanggan->id,
                 'jumlah' => $request->jumlah[$galonId],
                 'status_id' => $request->statusAntar_id,
-                'subTotal' => $subTotal,
-            ];
-
-            TransaksiDetail::create($data);
+                'subTotal' => Galon::findOrFail($galonId)->harga * $request->jumlah[$galonId],
+            ]);
         }
+
         return redirect('transaksi')->with('success', 'Data berhasil disimpan!');
     }
 }

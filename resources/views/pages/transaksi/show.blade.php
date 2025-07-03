@@ -103,7 +103,7 @@
                         <table class="table table-lg table-striped">
                             <thead class="thead-dark">
                                 <tr>
-                                    <th>Kode Transaksi</th>
+                                    <th>Data Transaksi</th>
                                     <th>Galon</th>
                                     <th>Jumlah</th>
                                     <th>Harga Galon</th>
@@ -113,7 +113,14 @@
                             <tbody>
                                 @foreach ($transaksi->TransaksiDetail as $detail)
                                     <tr>
-                                        <td>{{ $transaksi->kode_transaksi }}</td>
+                                        @if ($loop->first)
+                                            <td rowspan="{{ $transaksi->TransaksiDetail->count() }}">
+                                                <strong>Kode Transaksi:</strong> {{ $transaksi->kode_transaksi }}<br>
+                                                <strong>Nama:</strong> {{ $detail->pelanggan->name }}<br>
+                                                <strong>Alamat:</strong> {{ $detail->pelanggan->alamat }}<br>
+                                                <strong>No HP:</strong> {{ $detail->pelanggan->noHp }}
+                                            </td>
+                                        @endif
                                         <td>{{ $detail->galon->name }}</td>
                                         <td>{{ $detail->jumlah }}</td>
                                         <td>Rp. {{ number_format($detail->galon->harga, 0, ',', '.') }}</td>
@@ -148,7 +155,16 @@
                                     <th colspan="4" style="text-align:right">Total:</th>
                                     <th>
                                         Rp.
-                                        {{ number_format($transaksi->TransaksiDetail->sum('subTotal') + ($transaksi->TransaksiDetail->first()->pengantaranStatus->name == 'Tidak' ? 0 : $transaksi->TransaksiDetail->first()->pengantaranStatus->harga) - 500, 0, ',', '.') }}
+                                        {{ number_format(
+                                            $transaksi->TransaksiDetail->sum('subTotal') +
+                                                ($transaksi->TransaksiDetail->first()->pengantaranStatus->name == 'Tidak'
+                                                    ? 0
+                                                    : $transaksi->TransaksiDetail->first()->pengantaranStatus->harga) +
+                                                ($transaksi->TransaksiDetail->first()->pengantaranStatus->name == 'Tidak' ? 0 : -500),
+                                            0,
+                                            ',',
+                                            '.',
+                                        ) }}
                                     </th>
                                 </tr>
                             </tfoot>

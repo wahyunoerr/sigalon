@@ -44,48 +44,66 @@
             <ul class="menu">
                 <li class="sidebar-title">Menu</li>
 
-                <li class="sidebar-item {{ request()->routeIs('home') ? 'active' : '' }} ">
-                    <a href="{{ route('home') }}" class='sidebar-link'>
-                        <i class="bi bi-grid-fill"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-                <li class="sidebar-item {{ request()->routeIs('antar') ? 'active' : '' }} ">
-                    <a href="{{ route('antar') }}" class='sidebar-link'>
-                        <i class="bi bi-arrow-clockwise"></i>
-                        <span>Status Antar</span>
-                    </a>
-                </li>
-                <li class="sidebar-item {{ request()->routeIs('galon') ? 'active' : '' }} ">
-                    <a href="{{ route('galon') }}" class='sidebar-link'>
-                        <i class="bi bi-egg-fill"></i>
-                        <span>Jenis Galon</span>
-                    </a>
-                </li>
-                <li class="sidebar-title">Manajemen isi Galon</li>
+                @hasanyrole('admin|karyawan')
+                    <li class="sidebar-item {{ request()->routeIs('home') ? 'active' : '' }} ">
+                        <a href="{{ route('home') }}" class='sidebar-link'>
+                            <i class="bi bi-grid-fill"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                @endhasanyrole
 
+                @role('admin')
+                    <li class="sidebar-item {{ request()->routeIs('antar') ? 'active' : '' }} ">
+                        <a href="{{ route('antar') }}" class='sidebar-link'>
+                            <i class="bi bi-arrow-clockwise"></i>
+                            <span>Status Antar</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item {{ request()->routeIs('galon') ? 'active' : '' }} ">
+                        <a href="{{ route('galon') }}" class='sidebar-link'>
+                            <i class="bi bi-egg-fill"></i>
+                            <span>Jenis Galon</span>
+                        </a>
+                    </li>
+                @endrole
 
-                <li class="sidebar-item {{ request()->routeIs('isiUlang') ? 'active' : '' }} ">
-                    <a href="{{ route('isiUlang') }}" class='sidebar-link'>
-                        <i class="bi bi-egg"></i>
-                        <span>Isi Ulang Galon</span>
-                    </a>
-                </li>
+                @hasanyrole('admin|karyawan')
+                    <li class="sidebar-title">Manajemen isi Galon</li>
+                    <li class="sidebar-item {{ request()->routeIs('isiUlang') ? 'active' : '' }} ">
+                        <a href="{{ route('isiUlang') }}" class='sidebar-link'>
+                            <i class="bi bi-egg"></i>
+                            <span>Isi Ulang Galon</span>
+                        </a>
+                    </li>
 
-                <li class="sidebar-title">Manajemen Transaksi</li>
-                <li class="sidebar-item {{ request()->routeIs('transaksi') ? 'active' : '' }} ">
-                    <a href="{{ route('transaksi') }}" class='sidebar-link'>
-                        <i class="bi bi-cash-coin"></i>
-                        <span>Transaksi Isi Galon</span>
-                    </a>
-                </li>
-                <li class="sidebar-title">Pengeluaran</li>
-                <li class="sidebar-item {{ request()->routeIs('pengeluaran') ? 'active' : '' }} ">
-                    <a href="{{ route('pengeluaran') }}" class='sidebar-link'>
-                        <i class="bi bi-coin"></i>
-                        <span>Pengeluaran</span>
-                    </a>
-                </li>
+                    <li class="sidebar-title">Manajemen Transaksi</li>
+                    <li class="sidebar-item {{ request()->routeIs('transaksi') ? 'active' : '' }} ">
+                        <a href="{{ route('transaksi') }}" class='sidebar-link'>
+                            <i class="bi bi-cash-coin"></i>
+                            <span>Transaksi Isi Galon</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar-title">Manajemen Pelanggan</li>
+                    <li class="sidebar-item {{ request()->routeIs('pelanggan.*') ? 'active' : '' }} ">
+                        <a href="{{ route('pelanggan.index') }}" class='sidebar-link'>
+                            <i class="bi bi-people-fill"></i>
+                            <span>Pelanggan</span>
+                        </a>
+                    </li>
+                @endhasanyrole
+
+                @role('admin')
+                    <li class="sidebar-title">Pengeluaran</li>
+                    <li class="sidebar-item {{ request()->routeIs('pengeluaran') ? 'active' : '' }} ">
+                        <a href="{{ route('pengeluaran') }}" class='sidebar-link'>
+                            <i class="bi bi-coin"></i>
+                            <span>Pengeluaran</span>
+                        </a>
+                    </li>
+                @endrole
+
                 <li class="sidebar-item">
                     <a href="{{ route('logout') }}" class='sidebar-link'
                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">

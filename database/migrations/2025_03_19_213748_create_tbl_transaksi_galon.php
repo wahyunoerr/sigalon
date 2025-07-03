@@ -16,8 +16,6 @@ return new class extends Migration
             $table->string('kode_transaksi', 100);
             $table->string('jumlah', 100);
             $table->string('total_harga', 100);
-            $table->string('alamat', 100)->nullable();
-            $table->string('noHp')->nullable();
             $table->timestamps();
         });
     }

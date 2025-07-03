@@ -15,6 +15,7 @@ class TransaksiDetail extends Model
     protected $fillable = [
         'transaksi_id',
         'galon_id',
+        'pelanggan_id',
         'jumlah',
         'status_id',
         'subTotal'
@@ -47,5 +48,15 @@ class TransaksiDetail extends Model
     public function pengantaranStatus(): BelongsTo
     {
         return $this->belongsTo(statusAntar::class, 'status_id', 'id');
+    }
+
+    /**
+     * Get the pelanggan that owns the TransaksiDetail
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function pelanggan(): BelongsTo
+    {
+        return $this->belongsTo(Pelanggan::class, 'pelanggan_id', 'id');
     }
 }

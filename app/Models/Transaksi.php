@@ -16,8 +16,6 @@ class Transaksi extends Model
         'kode_transaksi',
         'jumlah',
         'total_harga',
-        'alamat',
-        'noHp'
     ];
 
     /**

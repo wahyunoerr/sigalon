@@ -11,22 +11,24 @@
                 </div>
             </div>
             <div class="card-body">
-                <div class="row mb-4">
-                    <div class="col-md-12">
-                        <form action="{{ route('transaksi.filter') }}" method="GET" class="form-inline">
-                            <div class="form-group mr-2">
-                                <label for="start_date" class="mr-2">Dari Tanggal:</label>
-                                <input type="date" name="start_date" id="start_date" class="form-control">
-                            </div>
-                            <div class="form-group mr-2">
-                                <label for="end_date" class="mr-2">Sampai Tanggal:</label>
-                                <input type="date" name="end_date" id="end_date" class="form-control">
-                            </div>
-                            <button type="submit" class="btn btn-primary mr-2">Filter</button>
-                            <a href="{{ route('transaksi') }}" class="btn btn-secondary">Reset</a>
-                        </form>
+                @hasrole('admin')
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <form action="{{ route('transaksi.filter') }}" method="GET" class="form-inline">
+                                <div class="form-group mr-2">
+                                    <label for="start_date" class="mr-2">Dari Tanggal:</label>
+                                    <input type="date" name="start_date" id="start_date" class="form-control">
+                                </div>
+                                <div class="form-group mr-2">
+                                    <label for="end_date" class="mr-2">Sampai Tanggal:</label>
+                                    <input type="date" name="end_date" id="end_date" class="form-control">
+                                </div>
+                                <button type="submit" class="btn btn-primary mr-2">Filter</button>
+                                <a href="{{ route('transaksi') }}" class="btn btn-secondary">Reset</a>
+                            </form>
+                        </div>
                     </div>
-                </div>
+                @endhasrole
                 <table class="table table-striped" id="table1">
                     <thead>
                         <tr>
@@ -52,9 +54,11 @@
                                     <div class="buttons">
                                         <a href="{{ route('transaksi.show', $t->id) }}" class="btn btn-sm icon btn-info"><i
                                                 class="bi bi-info-circle"></i></a>
-                                        <a href="{{ route('transaksi.destroy', $t->id) }}"
-                                            class="btn btn-sm icon btn-danger" data-confirm-delete="true"><i
-                                                class="bi bi-trash"></i></a>
+                                        @hasrole('admin')
+                                            <a href="{{ route('transaksi.destroy', $t->id) }}"
+                                                class="btn btn-sm icon btn-danger" data-confirm-delete="true"><i
+                                                    class="bi bi-trash"></i></a>
+                                        @endhasrole
                                     </div>
                                 </td>
                             </tr>

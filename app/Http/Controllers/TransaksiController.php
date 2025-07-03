@@ -43,7 +43,7 @@ class TransaksiController extends Controller
      */
     public function show(Transaksi $transaksi)
     {
-        $transaksi->load('TransaksiDetail');
+        $transaksi->load(['TransaksiDetail.pelanggan']);
         return view('pages.transaksi.show', compact('transaksi'));
     }
 
